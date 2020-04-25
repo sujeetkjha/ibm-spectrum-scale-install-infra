@@ -1,0 +1,26 @@
+--- 
+- include_tasks: storage.yml
+- block:
+  - name: File audit logging precheck | Check if File audit logging is enabled.
+    assert:
+     that:
+     - auditlogin_params.is_enabled is defined
+     - auditlogin_params.is_enabled | bool
+     fail_msg: "File audit logging is disabled"
+     success_msg: "File audit logging is enabled. Proceeding to check filesystem."
+
+  - name: File audit logging precheck |  Check if filesystem details has been supplied.
+    assert:
+     that:
+     - scale_storage.0.filesystem is defined
+     - scale_storage.0.filesystem| length > 0
+     fail_msg: "Filesystem information is not defined."
+     success_msg: "File Audit Logging precheck OK"
+
+  #- name: Check status of auditlogin
+    #shell:
+     #cmd: /usr/lpp/mmfs/bin/mmaudit all list -Y
+    #register: auditlogin_status
+    #when: auditlogin_params.is_enabled is true
+    #ignore_errors: true
+  run_once: True

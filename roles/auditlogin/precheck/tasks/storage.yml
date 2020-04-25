@@ -1,0 +1,12 @@
+---
+
+- block:
+  - name: auditlogin | Create extra facts
+    set_fact:
+     auditlogin_params: "{{ auditlogin | default([]) | combine(item)}}"
+    when:
+    - auditlogin is defined
+    with_items:
+    - "{{ auditlogin }}"
+      # - debug:
+      # msg: "{{ auditlogin_params }}"

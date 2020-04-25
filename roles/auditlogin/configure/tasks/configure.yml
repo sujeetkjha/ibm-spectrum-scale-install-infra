@@ -1,0 +1,25 @@
+---
+- block:  ## run_once: true
+    - name: storage | Find created filesystem(s)
+      shell: 
+       cmd: "{{ directory }}mmlsfs all -Y | grep -v HEADER | cut -d ':' -f 7 | uniq"
+      register: scale_storage_filesystem
+      changed_when: false
+      failed_when: false
+
+    - name: configure filesystem with the default settings
+      shell: 
+       cmd: "{{ directory }}mmaudit {{ auditlogin_params.Device }} enable"
+      when: auditlogin_params.Device in scale_storage_filesystem.stdout
+
+    - name: configure filesystem for a specific set of events
+      shell:
+       cmd: "{{ directory }}mmaudit {{ auditlogin_params.Device }} enable --events {{ auditlogin_params.events }}"
+      when: auditlogin_params.Device in scale_storage_filesystem.stdout and auditlogin_params.events|length > 0
+     
+    - name: configure filesystem with a input retention period
+      shell: 
+       cmd: "{{ directory }}mmaudit {{ auditlogin_params.Device }} enable --retention {{ auditlogin_params.retention }}"
+      when: auditlogin_params.Device in scale_storage_filesystem.stdout and auditlogin_params.retention|length > 0
+
+  run_once: true
